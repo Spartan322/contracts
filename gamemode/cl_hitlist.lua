@@ -18,8 +18,10 @@ usermessage.Hook( "hitman_notarget", NoTarget )
 function DisplayHitlistHUD()
     if targetname ~= nil then
         if alive == 1 then
-            draw.SimpleText("Kill " .. targetname, "HealthAmmo", 35, ScrH() - 220, Color(255, 0, 0, 255))
-            draw.SimpleText("Killed Targets: " .. targetkills .. " | Killed Civilians: " .. civkills, "HealthAmmo", 35, 35, Color(255, 0, 0, 255))
+            draw.RoundedBox(8, 270, ScrH() - 130, 200, 120, Color(0, 0, 10, 200))
+			draw.SimpleText("Target: " .. targetname, "HealthAmmo", 280, ScrH() - 75, Color(255, 0, 0, 255))
+            draw.SimpleText("Killed Targets: " .. targetkills, "HealthAmmo", 280, ScrH() - 125, Color(255, 255, 255, 255))
+			draw.SimpleText("Killed Civilians: " .. civkills, "HealthAmmo", 280, ScrH() - 105, Color(255, 255, 255, 255))
         end
     end
 end
@@ -47,7 +49,7 @@ end
 usermessage.Hook( "hitman_dead", SetDead )
 
 function YouAreTraitor(um)
-    chat.AddText(Color(255, 0, 0), "You are a hitman, hired by a mysterious employer who wants a range of people dead. Avoid killing anyone else than the target or your employer will be ... unsatisfied.")
+    chat.AddText(Color(255, 0, 0), "You are a hitman, hired by a mysterious employer who wants a range of people dead. Avoid killing anyone other than the target or your employer will be ... unsatisfied.")
 end
 usermessage.Hook( "hitman_you_are_t", YouAreTraitor )
 
