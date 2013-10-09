@@ -991,13 +991,36 @@ end
 
 target_pool = {}
 traitor_targets = {}
+traitor_killed_targets = {}
+traitor_killed_civs = {}
 
 --Set up the initial tables and give each T a target
 function InitHitlist()
     GetPotentialTargets()
     traitor_targets = {}
+    traitor_killed_civs = {}
+    umsg.Start("hitman_innocent")
+    umsg.End()
     for _, ply in pairs(GetTraitors()) do
         SetTraitorTarget(ply)
+        traitor_killed_targets[ply:Nick()] = 0
+        traitor_killed_civs[ply:Nick()] = 0
+        umsg.Start("hitman_traitor", ply)
+        umsg.End()
+        umsg.Start("hitman_killed_targets", ply)
+        umsg.Short(0)
+        umsg.End()
+        umsg.Start("hitman_killed_civs", ply)
+        umsg.Short(0)
+        umsg.End()
+        umsg.Start("hitman_you_are_t", ply)
+        umsg.End()
+    end
+    for _, ply in pairs(player.GetAll()) do
+        if ply:Alive() then
+            umsg.Start("hitman_alive", ply)
+            umsg.End()
+        end
     end
 end
 
@@ -1062,19 +1085,19 @@ function CheckDeadPlayer(victim, weapon, killer)
     --Determining if a hitman needs to be punished
     if killer:IsPlayer() then
         if killer:IsTraitor() then
-            if GetAssignedHitman(victim) ~= nil then
-                if GetAssignedHitman(victim):Nick() == killer:Nick() then AwardHitman(killer)
+            if killer:Nick() ~= victim:Nick() then
+                if GetAssignedHitman(victim) ~= nil then
+                    if GetAssignedHitman(victim):Nick() == killer:Nick() then AwardHitman(killer)
+                    else PunishHitman(killer)
+                    end        
                 else PunishHitman(killer)
-                end        
-            else PunishHitman(killer)
+                end
             end
         end
     end
     --Disabling the TargetText client-side
-    if victim:IsTraitor() then
-        umsg.Start("hitman_notarget", victim)
-        umsg.End()
-    end
+    umsg.Start("hitman_dead", victim)
+    umsg.End()
     ReassignTarget(victim)
 end
 hook.Add( "PlayerDeath", "CheckDeadPlayer", CheckDeadPlayer)
@@ -1095,8 +1118,10 @@ function ReassignTarget(ply)
             end
         end
         traitor_targets[ply:Nick()] = nil
+        umsg.Start("hitman_notarget", ply)
+        umsg.End()
     end
-    --Give Assigned Hitman a new target
+    -- Give Assigned Hitman a new target
     if GetAssignedHitman(ply) ~= nil then
         SetTraitorTarget(GetAssignedHitman(ply))
     end
@@ -1111,11 +1136,24 @@ end
 
 --To be finished
 function AwardHitman(ply)
-    print(ply:Nick() .. " is a good Hitman.")
+    traitor_killed_targets[ply:Nick()] = 1 + traitor_killed_targets[ply:Nick()]
+    umsg.Start("hitman_killed_targets", ply)
+    umsg.Short(traitor_killed_targets[ply:Nick()])
+    umsg.End()
 end
 
 function PunishHitman(ply)
-    print(ply:Nick() .. " is a very bad Hitman.")
+    traitor_killed_civs[ply:Nick()] = 1 + traitor_killed_civs[ply:Nick()]
+    
+    umsg.Start("hitman_killed_civs", ply)
+    umsg.Short(traitor_killed_civs[ply:Nick()])
+    umsg.End()
+    
+    if traitor_killed_targets[ply:Nick()] < traitor_killed_civs[ply:Nick()] then
+        ply:Kill()
+        umsg.Start("hitman_disappointed", ply)
+        umsg.End()
+    end
 end
 --For Debugging Purposes, will be removed on release
 function PrintTargets()
@@ -1124,7 +1162,7 @@ function PrintTargets()
         if ply:Alive() then print(ply:Nick() .. " ; " .. traitor_targets[ply:Nick()]) end
     end
 end
-concommand.Add("hitlist_print_targets", PrintTargets)
+concommand.Add("hitman_print_targets", PrintTargets)
 
 function PrintPool()
     print("Potential Targets")
@@ -1132,4 +1170,4 @@ function PrintPool()
         print(ply:Nick())
     end
 end
-concommand.Add("hitlist_print_pool", PrintPool)
+concommand.Add("hitman_print_pool", PrintPool)
