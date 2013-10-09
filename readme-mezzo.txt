@@ -6,6 +6,3 @@ Same rules as TTT apply. But this time the traitors are each given a specific ta
 
 TODO:
 -Add a Convar that enables/disables the mod
--Award/punish Hitmen who go kill too many non-targets
-    ideas:
-        -Slay if Targetkill:Nontargetkills is below 1
