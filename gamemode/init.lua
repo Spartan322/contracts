@@ -1070,32 +1070,38 @@ function CheckDeadPlayer(victim, weapon, killer)
             end
         end
     end
-    --Adding Target back to pool
-    if victim:IsTraitor() then
-        AddToPool(PlayerByName(traitor_targets[victim:Nick()]))
-        traitor_targets[victim:Nick()] = nil
-        umsg.Start("hitman_notarget", victim)
+    --Disabling the TargetText client-side
+	if victim:IsTraitor() then
+	    umsg.Start("hitman_notarget", victim)
         umsg.End()
     end
-    --Getting new Target
-    if GetAssignedHitman(victim) ~= nil then
-        SetTraitorTarget(GetAssignedHitman(victim))
-    end
-    if not victim:IsTraitor() then RemoveFromPool(victim) end
+	ReassignTarget(victim)
 end
 hook.Add( "PlayerDeath", "CheckDeadPlayer", CheckDeadPlayer)
 
 function CheckDisconnectedPlayer(ply)
-    if GetAssignedHitman(ply) ~= nil then
-        SetTraitorTarget(GetAssignedHitman(ply))
-    end
-    if ply:IsTraitor() then
-        table.insert(target_pool, PlayerByName(traitor_targets[ply:Nick()]))
-        traitor_targets[ply:Nick()] = nil
-    end
-    RemoveFromPool(ply)
+    ReassignTarget(ply)
 end
 hook.Add("PlayerDisconnected", "CheckDisconnectedPlayer", CheckDisconnectedPlayer)
+
+function ReassignTarget(ply)
+    --Add Target back to pool
+    if ply:IsTraitor() then
+	    AddToPool(PlayerByName(traitor_targets[ply:Nick()]))
+        --Check if a Traitor is without a target
+		for _, v in pairs(GetTraitors()) do
+		    if v:Alive() then
+			    if not PlayerByName(traitor_targets[v:Nick()]):Alive() then SetTraitorTarget(v) end
+			end
+		end
+		traitor_targets[ply:Nick()] = nil
+	end
+	--Give Assigned Hitman a new target
+	if GetAssignedHitman(ply) ~= nil then
+        SetTraitorTarget(GetAssignedHitman(ply))
+    end
+	RemoveFromPool(ply)
+end
 
 function PlayerByName(name)
     for _, ply in pairs(player.GetAll()) do
