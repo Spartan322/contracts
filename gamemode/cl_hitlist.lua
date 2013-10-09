@@ -19,9 +19,9 @@ function DisplayHitlistHUD()
     if targetname ~= nil then
         if alive == 1 then
             draw.RoundedBox(8, 270, ScrH() - 130, 200, 120, Color(0, 0, 10, 200))
-			draw.SimpleText("Target: " .. targetname, "HealthAmmo", 280, ScrH() - 75, Color(255, 0, 0, 255))
+            draw.SimpleText("Target: " .. targetname, "HealthAmmo", 280, ScrH() - 75, Color(255, 0, 0, 255))
             draw.SimpleText("Killed Targets: " .. targetkills, "HealthAmmo", 280, ScrH() - 125, Color(255, 255, 255, 255))
-			draw.SimpleText("Killed Civilians: " .. civkills, "HealthAmmo", 280, ScrH() - 105, Color(255, 255, 255, 255))
+            draw.SimpleText("Killed Civilians: " .. civkills, "HealthAmmo", 280, ScrH() - 105, Color(255, 255, 255, 255))
         end
     end
 end
