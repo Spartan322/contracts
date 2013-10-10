@@ -66,8 +66,8 @@ CreateConVar("ttt_posttime_seconds", "30", FCVAR_NOTIFY)
 CreateConVar("ttt_firstpreptime", "60")
 
 local ttt_haste = CreateConVar("ttt_haste", "1", FCVAR_NOTIFY)
-CreateConVar("ttt_haste_starting_minutes", "5", FCVAR_NOTIFY)
-CreateConVar("ttt_haste_minutes_per_death", "0.5", FCVAR_NOTIFY)
+CreateConVar("ttt_haste_starting_minutes", "10", FCVAR_NOTIFY)
+CreateConVar("ttt_haste_minutes_per_death", "1", FCVAR_NOTIFY)
 
 CreateConVar("ttt_spawn_wave_interval", "0")
 
