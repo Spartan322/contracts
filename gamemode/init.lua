@@ -999,14 +999,10 @@ function InitHitlist()
     GetPotentialTargets()
     traitor_targets = {}
     traitor_killed_civs = {}
-    umsg.Start("hitman_innocent")
-    umsg.End()
     for _, ply in pairs(GetTraitors()) do
         SetTraitorTarget(ply)
         traitor_killed_targets[ply:Nick()] = 0
         traitor_killed_civs[ply:Nick()] = 0
-        umsg.Start("hitman_traitor", ply)
-        umsg.End()
         umsg.Start("hitman_killed_targets", ply)
         umsg.Short(0)
         umsg.End()
@@ -1033,7 +1029,7 @@ end
 function GetPotentialTargets()
     target_pool = {}
     for _, ply in pairs(player.GetAll()) do
-        if not ply:IsTraitor() and ply:Alive() then
+        if not ply:IsTraitor() and ply:Alive() and not ply:IsSpec() then
             AddToPool(ply)
         end
     end
