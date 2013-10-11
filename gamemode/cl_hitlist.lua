@@ -5,6 +5,13 @@ local civkills = 0
 local alive
 local traitor
 
+--for painting
+local x = 270
+local y = ScrH() - 130
+
+local w = 200
+local h = 120
+
 function ReceiveTarget(um)
     targetname = um:ReadString()
 end
@@ -18,10 +25,21 @@ usermessage.Hook( "hitman_notarget", NoTarget )
 function DisplayHitlistHUD()
     if targetname ~= nil then
         if alive == 1 then
-            draw.RoundedBox(8, 270, ScrH() - 130, 200, 120, Color(0, 0, 10, 200))
-            draw.SimpleText("Target: " .. targetname, "HealthAmmo", 280, ScrH() - 75, Color(255, 0, 0, 255))
-            draw.SimpleText("Killed Targets: " .. targetkills, "HealthAmmo", 280, ScrH() - 125, Color(255, 255, 255, 255))
-            draw.SimpleText("Killed Civilians: " .. civkills, "HealthAmmo", 280, ScrH() - 105, Color(255, 255, 255, 255))
+		    --basic box
+            draw.RoundedBox(8, x, y, w, h, Color(0, 0, 10, 200))
+			draw.RoundedBox(8, x, y, w, 30, Color(200, 25, 25, 200))
+			
+			--Didn't mind using BadKings ShadowedText. For some reason stuff doesn't properly import. Got to clean up the bloody code at some point anyway.
+			
+			--Target announcer
+			draw.SimpleText(targetname, "TraitorState", x + 12, y+2, Color(0, 0, 0, 255))
+            draw.SimpleText(targetname, "TraitorState", x + 10, y, Color(255, 255, 255, 255))
+			--Stats
+            draw.SimpleText("Killed Targets: " .. targetkills, "HealthAmmo", x + 12, y +42, Color(0, 0, 0, 255))
+			draw.SimpleText("Killed Targets: " .. targetkills, "HealthAmmo", x + 10, y +40, Color(255, 255, 255, 255))
+			
+			draw.SimpleText("Killed Civilians: " .. civkills, "HealthAmmo", x + 12, y + 62, Color(0, 0, 0, 255))
+            draw.SimpleText("Killed Civilians: " .. civkills, "HealthAmmo", x + 10, y + 60, Color(255, 255, 255, 255))
         end
     end
 end

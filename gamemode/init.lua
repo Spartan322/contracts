@@ -127,6 +127,8 @@ local umsg = umsg
 local player = player
 local timer = timer
 
+local hitman_version = 15
+
 ---- Round mechanics
 function GM:Initialize()
    MsgN("Trouble In Terrorist Town gamemode initializing...")
@@ -977,14 +979,15 @@ end
 concommand.Add("ttt_version", ShowVersion)
 
 function AnnounceVersion()
-   local text = Format("You are playing %s, version %s.\n", GAMEMODE.Name, GAMEMODE.Version)
-
-   -- announce to players
-   for k, ply in pairs(player.GetAll()) do
-      if IsValid(ply) then
-         ply:PrintMessage(HUD_PRINTTALK, text)
-      end
-   end
+    local text = Format("You are playing %s, version %s.\n", GAMEMODE.Name, GAMEMODE.Version)
+    
+    -- announce to players
+    for k, ply in pairs(player.GetAll()) do
+         if IsValid(ply) then
+            ply:PrintMessage(HUD_PRINTTALK, text)
+		    ply:PrintMessage(HUD_PRINTTALK, "TTT Hitman Mod Version " .. hitman_version)
+        end
+    end
 end
 
 --Added by Mezzokoko
@@ -993,6 +996,8 @@ target_pool = {}
 traitor_targets = {}
 traitor_killed_targets = {}
 traitor_killed_civs = {}
+
+
 
 --Set up the initial tables and give each T a target
 function InitHitlist()
