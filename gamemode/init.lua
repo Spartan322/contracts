@@ -127,7 +127,7 @@ local umsg = umsg
 local player = player
 local timer = timer
 
-local hitman_version = 15
+local hitman_version = 16
 
 ---- Round mechanics
 function GM:Initialize()
@@ -992,19 +992,25 @@ end
 
 --Added by Mezzokoko
 
-target_pool = {}
-traitor_targets = {}
-traitor_killed_targets = {}
-traitor_killed_civs = {}
-
-
+local target_pool = {}
+local traitor_targets = {}
+local traitor_killed_targets = {}
+local traitor_killed_civs = {}
 
 --Set up the initial tables and give each T a target
 function InitHitlist()
     GetPotentialTargets()
     traitor_targets = {}
     traitor_killed_civs = {}
-    for _, ply in pairs(GetTraitors()) do
+    for _, ply in pairs(player.GetAll()) do
+        if ply:Alive() and not ply:IsSpec() then
+            umsg.Start("hitman_alive", ply)
+            umsg.End()
+            umsg.Start("hitman_innocent", ply)
+            umsg.End()
+        end
+    end
+	for _, ply in pairs(GetTraitors()) do
         SetTraitorTarget(ply)
         traitor_killed_targets[ply:Nick()] = 0
         traitor_killed_civs[ply:Nick()] = 0
@@ -1014,14 +1020,8 @@ function InitHitlist()
         umsg.Start("hitman_killed_civs", ply)
         umsg.Short(0)
         umsg.End()
-        umsg.Start("hitman_you_are_t", ply)
+        umsg.Start("hitman_traitor", ply)
         umsg.End()
-    end
-    for _, ply in pairs(player.GetAll()) do
-        if ply:Alive() then
-            umsg.Start("hitman_alive", ply)
-            umsg.End()
-        end
     end
 end
 
@@ -1082,19 +1082,17 @@ function GetAssignedHitman(target_ply)
     end
 end
 --Clean pool, when a player dies or leaves
-function CheckDeadPlayer(victim, weapon, killer)
+local function CheckDeadPlayer(victim, weapon, killer)
     --Determining if a hitman needs to be punished
     if killer:IsPlayer() then
-        if killer:IsTraitor() then
-            if killer:Nick() ~= victim:Nick() then
-                if GetAssignedHitman(victim) ~= nil then
-                    if GetAssignedHitman(victim):Nick() == killer:Nick() then AwardHitman(killer)
-                    else PunishHitman(killer)
-                    end        
+	    if killer:IsTraitor() then
+		    if (killer:Nick() ~= victim:Nick()) and (GetAssignedHitman(victim) ~= nil) then
+                if GetAssignedHitman(victim):Nick() == killer:Nick() then AwardHitman(killer)
                 else PunishHitman(killer)
-                end
-            end
-        end
+                end        
+            else PunishHitman(killer)
+		    end
+	    end
     end
     --Disabling the TargetText client-side
     umsg.Start("hitman_dead", victim)
@@ -1103,7 +1101,7 @@ function CheckDeadPlayer(victim, weapon, killer)
 end
 hook.Add( "PlayerDeath", "CheckDeadPlayer", CheckDeadPlayer)
 
-function CheckDisconnectedPlayer(ply)
+local function CheckDisconnectedPlayer(ply)
     ReassignTarget(ply)
 end
 hook.Add("PlayerDisconnected", "CheckDisconnectedPlayer", CheckDisconnectedPlayer)
@@ -1114,8 +1112,8 @@ function ReassignTarget(ply)
         AddToPool(PlayerByName(traitor_targets[ply:Nick()]))
         --Check if a Traitor is without a target
         for _, v in pairs(GetTraitors()) do
-            if v:Alive() then
-                if not PlayerByName(traitor_targets[v:Nick()]):Alive() then SetTraitorTarget(v) end
+            if v:Alive() and not PlayerByName(traitor_targets[v:Nick()]):Alive() then
+			    SetTraitorTarget(v) 
             end
         end
         traitor_targets[ply:Nick()] = nil
@@ -1157,7 +1155,7 @@ function PunishHitman(ply)
     end
 end
 --For Debugging Purposes, will be removed on release
-function PrintTargets()
+local function PrintTargets()
     print("Targets")
     for _, ply in pairs(GetTraitors()) do
         if ply:Alive() then print(ply:Nick() .. " ; " .. traitor_targets[ply:Nick()]) end
@@ -1165,7 +1163,7 @@ function PrintTargets()
 end
 concommand.Add("hitman_print_targets", PrintTargets)
 
-function PrintPool()
+local function PrintPool()
     print("Potential Targets")
     for _, ply in pairs(target_pool) do
         print(ply:Nick())
