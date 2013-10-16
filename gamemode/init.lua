@@ -991,6 +991,7 @@ function AnnounceVersion()
 end
 
 --Added by Mezzokoko
+--------------------
 
 local target_pool = {}
 local traitor_targets = {}
@@ -1004,30 +1005,16 @@ function InitHitlist()
     traitor_killed_civs = {}
     for _, ply in pairs(player.GetAll()) do
         if ply:Alive() and not ply:IsSpec() then
-            umsg.Start("hitman_alive", ply)
-            umsg.End()
-            umsg.Start("hitman_innocent", ply)
-            umsg.End()
+            SetPlayerAlive(ply, true)
+            SetPlayerHitman(ply, false)
         end
     end
 	for _, ply in pairs(GetTraitors()) do
         SetTraitorTarget(ply)
-        traitor_killed_targets[ply:Nick()] = 0
-        traitor_killed_civs[ply:Nick()] = 0
-        umsg.Start("hitman_killed_targets", ply)
-        umsg.Short(0)
-        umsg.End()
-        umsg.Start("hitman_killed_civs", ply)
-        umsg.Short(0)
-        umsg.End()
-        umsg.Start("hitman_traitor", ply)
-        umsg.End()
+		SetKilledCivs(ply, 0)
+		SetKilledTargets(ply, 0)
+		SetPlayerHitman(ply, true)
     end
-end
-
-function DisableAllTargets()
-    umsg.Start("hitman_notarget")
-    umsg.End()
 end
 
 --Create table with all living innocents
@@ -1047,9 +1034,10 @@ end
 --Select Target and inform player
 function SetTraitorTarget(traitor)
     if #target_pool > 0 then
-        traitor_targets[traitor:Nick()] = PickFromPool():Nick()
+	    local pick = PickFromPool()
+        traitor_targets[traitor:Nick()] = pick:Nick()
         umsg.Start("hitman_newtarget", traitor)
-        umsg.String(traitor_targets[traitor:Nick()])
+		umsg.Entity(pick)
         umsg.End()
     else
         umsg.Start("hitman_notarget", traitor)
@@ -1084,19 +1072,20 @@ end
 --Clean pool, when a player dies or leaves
 local function CheckDeadPlayer(victim, weapon, killer)
     --Determining if a hitman needs to be punished
-    if killer:IsPlayer() then
-	    if killer:IsTraitor() then
-		    if (killer:Nick() ~= victim:Nick()) and (GetAssignedHitman(victim) ~= nil) then
-                if GetAssignedHitman(victim):Nick() == killer:Nick() then AwardHitman(killer)
+    if killer:Nick() ~= victim:Nick() then
+	    if killer:IsPlayer() then
+	        if killer:IsTraitor() then
+	    	    if GetAssignedHitman(victim) ~= nil then
+                    if GetAssignedHitman(victim):Nick() == killer:Nick() then AwardHitman(killer)
+                    else PunishHitman(killer)
+                    end        
                 else PunishHitman(killer)
-                end        
-            else PunishHitman(killer)
-		    end
-	    end
-    end
+	    	    end
+	        end
+        end
+	end
     --Disabling the TargetText client-side
-    umsg.Start("hitman_dead", victim)
-    umsg.End()
+    SetPlayerAlive(victim, false)
     ReassignTarget(victim)
 end
 hook.Add( "PlayerDeath", "CheckDeadPlayer", CheckDeadPlayer)
@@ -1135,24 +1124,48 @@ end
 
 --To be finished
 function AwardHitman(ply)
-    traitor_killed_targets[ply:Nick()] = 1 + traitor_killed_targets[ply:Nick()]
-    umsg.Start("hitman_killed_targets", ply)
-    umsg.Short(traitor_killed_targets[ply:Nick()])
-    umsg.End()
+    SetKilledTargets(ply, 1 + traitor_killed_targets[ply:Nick()])
 end
 
 function PunishHitman(ply)
-    traitor_killed_civs[ply:Nick()] = 1 + traitor_killed_civs[ply:Nick()]
-    
-    umsg.Start("hitman_killed_civs", ply)
-    umsg.Short(traitor_killed_civs[ply:Nick()])
-    umsg.End()
-    
+    SetKilledCivs(ply, 1 + traitor_killed_civs[ply:Nick()])
+   
     if traitor_killed_targets[ply:Nick()] < traitor_killed_civs[ply:Nick()] then
         ply:Kill()
         umsg.Start("hitman_disappointed", ply)
         umsg.End()
     end
+end
+
+function SetPlayerAlive(ply, val)
+    umsg.Start("hitman_alive", ply)
+	umsg.Bool(val)
+    umsg.End()
+end
+
+function SetPlayerHitman(ply, val)
+    umsg.Start("hitman_hitman", ply)
+	umsg.Bool(val)
+    umsg.End()
+end
+
+function SetKilledCivs(ply, score)
+    traitor_killed_civs[ply:Nick()] = score
+	umsg.Start("hitman_killed_civs", ply)
+    umsg.Short(score)
+    umsg.End()
+end
+
+function SetKilledTargets(ply, score)
+    traitor_killed_targets[ply:Nick()] = score
+	umsg.Start("hitman_killed_targets", ply)
+    umsg.Short(score)
+    umsg.End()
+end
+
+function DisableAllTargets()
+    umsg.Start("hitman_notarget")
+    umsg.End()
 end
 --For Debugging Purposes, will be removed on release
 local function PrintTargets()
