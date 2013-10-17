@@ -6,7 +6,7 @@ local alive
 local traitor
 
 --Version and Link; Update after each release
-local hitman_version = 16
+local hitman_version = 17
 local fp_link = "http://facepunch.com/showthread.php?t=1314066"
 
 --for painting

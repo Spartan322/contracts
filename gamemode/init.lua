@@ -127,7 +127,7 @@ local umsg = umsg
 local player = player
 local timer = timer
 
-local hitman_version = 16
+local hitman_version = 17
 
 ---- Round mechanics
 function GM:Initialize()
@@ -1072,8 +1072,8 @@ end
 --Clean pool, when a player dies or leaves
 local function CheckDeadPlayer(victim, weapon, killer)
     --Determining if a hitman needs to be punished
-    if killer:Nick() ~= victim:Nick() then
-	    if killer:IsPlayer() then
+    if killer:IsPlayer() then
+	    if killer:Nick() ~= victim:Nick() then
 	        if killer:IsTraitor() then
 	    	    if GetAssignedHitman(victim) ~= nil then
                     if GetAssignedHitman(victim):Nick() == killer:Nick() then AwardHitman(killer)
