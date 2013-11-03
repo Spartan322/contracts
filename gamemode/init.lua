@@ -127,7 +127,7 @@ local umsg = umsg
 local player = player
 local timer = timer
 
-local hitman_version = 18
+local hitman_version = 19
 
 ---- Round mechanics
 function GM:Initialize()
@@ -998,6 +998,8 @@ local traitor_targets = {}
 local traitor_killed_targets = {}
 local traitor_killed_civs = {}
 
+CreateConVar("hitman_punishment", 1)
+
 --Set up the initial tables and give each T a target
 function InitHitlist()
     GetPotentialTargets()
@@ -1129,12 +1131,28 @@ end
 
 function PunishHitman(ply)
     SetKilledCivs(ply, 1 + traitor_killed_civs[ply:Nick()])
-   
+    
     if traitor_killed_targets[ply:Nick()] < traitor_killed_civs[ply:Nick()] then
-        ply:Kill()
+        local punishment = GetConVar("hitman_punishment"):GetInt()
+		if punishment == 1 then
+		    ply:Kill()
+		elseif punishment == 2 then
+            PunishReveal(ply)
+		end
         umsg.Start("hitman_disappointed", ply)
+        umsg.Short(punishment)
         umsg.End()
     end
+end
+
+function PunishReveal(ply)
+    for _, v in pairs(player.GetAll()) do
+	    if v:Nick() ~= ply:Nick() then
+		    umsg.Start("hitman_reveal", v)
+			umsg.String(ply:Nick())
+			umsg.End()
+		end
+	end
 end
 
 function SetPlayerAlive(ply, val)
@@ -1167,19 +1185,3 @@ function DisableAllTargets()
     umsg.Start("hitman_notarget")
     umsg.End()
 end
---For Debugging Purposes, will be removed on release
-local function PrintTargets()
-    print("Targets")
-    for _, ply in pairs(GetTraitors()) do
-        if ply:Alive() then print(ply:Nick() .. " ; " .. traitor_targets[ply:Nick()]) end
-    end
-end
-concommand.Add("hitman_print_targets", PrintTargets)
-
-local function PrintPool()
-    print("Potential Targets")
-    for _, ply in pairs(target_pool) do
-        print(ply:Nick())
-    end
-end
-concommand.Add("hitman_print_pool", PrintPool)

@@ -1,0 +1,12 @@
+"contracts"
+{
+	"base"		"base"
+	"title"		"TTT - Hitman"
+	"maps"		"^ttt_"
+	"menusystem"	"1"
+
+	"settings"
+	{
+		// TODO: put some settings here
+	}
+}
