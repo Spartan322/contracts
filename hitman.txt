@@ -1,4 +1,4 @@
-"contracts"
+"hitman"
 {
 	"base"		"base"
 	"title"		"TTT - Hitman"
