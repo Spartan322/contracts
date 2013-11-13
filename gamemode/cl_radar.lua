@@ -229,7 +229,8 @@ end
 usermessage.Hook("corpse_call", ReceiveCorpseCall)
 
 local function ReceiveRadarScan(um)
-   if client:IsActiveTraitor() then
+   local hitmanscan = um:ReadBool()
+   if hitmanscan then
       RADAR.duration = 1
    else
       RADAR.duration = 30

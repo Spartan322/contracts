@@ -60,6 +60,11 @@ local function RadarScan(ply, cmd, args)
          end
 
          umsg.Start("radar", ply)
+		 if ply:IsTraitor() then
+		     umsg.Bool(true)
+	     else
+		     umsg.Bool(false)
+		 end
          umsg.Char(#targets)
          for k, tgt in pairs(targets) do
             umsg.Char(tgt.role)
