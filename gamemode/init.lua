@@ -127,7 +127,7 @@ local umsg = umsg
 local player = player
 local timer = timer
 
-local hitman_version = 21
+local hitman_version = 22
 
 ---- Round mechanics
 function GM:Initialize()
@@ -994,7 +994,7 @@ end
 --------------------
 
 local target_pool = {}
-local traitor_targets = {}
+traitor_targets = {}
 local traitor_killed_targets = {}
 local traitor_killed_civs = {}
 

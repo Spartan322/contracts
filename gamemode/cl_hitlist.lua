@@ -1,4 +1,4 @@
-local targetname
+targetname = ""
 local targetkills = 0
 local civkills = 0
 
@@ -8,7 +8,7 @@ local traitor
 local revealed = 0
 
 --Version and Link; Update after each release
-local hitman_version = 21
+local hitman_version = 22
 local fp_link = "http://facepunch.com/showthread.php?t=1314066"
 
 --for painting
