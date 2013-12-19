@@ -127,7 +127,7 @@ local umsg = umsg
 local player = player
 local timer = timer
 
-local hitman_version = 22
+local hitman_version = 23
 
 ---- Round mechanics
 function GM:Initialize()

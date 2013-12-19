@@ -15,7 +15,11 @@ local function RadarScan(ply, cmd, args)
             return
          end
          
-		 if ply:IsTraitor() then chargetime = 1 end
+		 if ply:IsTraitor() then
+		     chargetime = 1
+         else
+		     chargetime = 30
+		 end
 		 
          ply.radar_charge =  CurTime() + chargetime
 
@@ -26,7 +30,6 @@ local function RadarScan(ply, cmd, args)
          for k, p in pairs(scan_ents) do
 		    if ply:IsTraitor() and GetAssignedHitman(p) ~= nil then
 			    if GetAssignedHitman(p):Nick() ~= ply:Nick() then continue end
-		    else continue
 			end
 			
             if ply == p or (not IsValid(p)) then continue end
