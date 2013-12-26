@@ -8,7 +8,7 @@ local traitor
 local revealed = 0
 
 --Version and Link; Update after each release
-local hitman_version = 23
+local hitman_version = 24
 local fp_link = "http://facepunch.com/showthread.php?t=1314066"
 
 --for painting
