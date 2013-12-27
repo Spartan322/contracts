@@ -15,12 +15,12 @@ local function RadarScan(ply, cmd, args)
             return
          end
          
-		 if ply:IsTraitor() then
-		     chargetime = 1
+         if ply:IsTraitor() then
+             chargetime = 1
          else
-		     chargetime = 30
-		 end
-		 
+             chargetime = 30
+         end
+         
          ply.radar_charge =  CurTime() + chargetime
 
          local scan_ents = player.GetAll()
@@ -28,10 +28,11 @@ local function RadarScan(ply, cmd, args)
 
          local targets = {}
          for k, p in pairs(scan_ents) do
-		    if ply:IsTraitor() and GetAssignedHitman(p) ~= nil then
-			    if GetAssignedHitman(p):Nick() ~= ply:Nick() then continue end
-			end
-			
+            if ply:IsTraitor() and GetAssignedHitman(p) != nil then
+                if GetAssignedHitman(p):Nick() != ply:Nick() then continue end
+			else continue
+            end
+            
             if ply == p or (not IsValid(p)) then continue end
 
             if p:IsPlayer() then
@@ -63,11 +64,8 @@ local function RadarScan(ply, cmd, args)
          end
 
          umsg.Start("radar", ply)
-		 if ply:IsTraitor() then
-		     umsg.Bool(true)
-	     else
-		     umsg.Bool(false)
-		 end
+         umsg.Bool(ply:IsTraitor())
+
          umsg.Char(#targets)
          for k, tgt in pairs(targets) do
             umsg.Char(tgt.role)
