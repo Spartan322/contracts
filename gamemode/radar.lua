@@ -28,9 +28,11 @@ local function RadarScan(ply, cmd, args)
 
          local targets = {}
          for k, p in pairs(scan_ents) do
-            if ply:IsTraitor() and GetAssignedHitman(p) != nil then
-                if GetAssignedHitman(p):Nick() != ply:Nick() then continue end
-			else continue
+            if ply:IsTraitor()
+                if GetAssignedHitman(p) != nil then
+                    if GetAssignedHitman(p):Nick() != ply:Nick() then continue end
+                else continue
+                end
             end
             
             if ply == p or (not IsValid(p)) then continue end
