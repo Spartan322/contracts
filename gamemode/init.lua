@@ -127,7 +127,7 @@ local umsg = umsg
 local player = player
 local timer = timer
 
-local hitman_version = 24
+local hitman_version = 25
 
 ---- Round mechanics
 function GM:Initialize()
@@ -985,7 +985,7 @@ function AnnounceVersion()
     for k, ply in pairs(player.GetAll()) do
          if IsValid(ply) then
             ply:PrintMessage(HUD_PRINTTALK, text)
-		    ply:PrintMessage(HUD_PRINTTALK, "TTT Hitman Mod Version " .. hitman_version)
+            ply:PrintMessage(HUD_PRINTTALK, "TTT Hitman Mod Version " .. hitman_version)
         end
     end
 end
@@ -1035,13 +1035,14 @@ end
 
 --Select Target and inform player
 function SetTraitorTarget(traitor)
-    if #target_pool > 0 then
+	if #target_pool > 0 then
 	    local pick = PickFromPool()
         traitor_targets[traitor:Nick()] = pick:Nick()
         umsg.Start("hitman_newtarget", traitor)
 		umsg.Entity(pick)
         umsg.End()
     else
+	    traitor_targets[traitor:Nick()] = nil
         umsg.Start("hitman_notarget", traitor)
         umsg.End()
     end
@@ -1051,14 +1052,14 @@ end
 function RemoveFromPool(ply)
     local temp = {}
     for _, v in pairs(target_pool) do
-        if v:Nick() ~= ply:Nick() then table.insert(temp, v) end
+        if v:Nick() != ply:Nick() then table.insert(temp, v) end
     end
     target_pool = temp
 end
 
 --Pick and remove from pool
 function PickFromPool()
-    local pick = table.Random(target_pool)
+	local pick = table.Random(target_pool)
     RemoveFromPool(pick)
     return pick
 end
@@ -1075,9 +1076,9 @@ end
 local function CheckDeadPlayer(victim, weapon, killer)
     --Determining if a hitman needs to be punished
     if killer:IsPlayer() then
-	    if killer:Nick() ~= victim:Nick() then
+	    if killer:Nick() != victim:Nick() then
 	        if killer:IsTraitor() then
-	    	    if GetAssignedHitman(victim) ~= nil then
+	    	    if GetAssignedHitman(victim) != nil then
                     if GetAssignedHitman(victim):Nick() == killer:Nick() then AwardHitman(killer)
                     else PunishHitman(killer)
                     end        
@@ -1098,24 +1099,31 @@ end
 hook.Add("PlayerDisconnected", "CheckDisconnectedPlayer", CheckDisconnectedPlayer)
 
 function ReassignTarget(ply)
+    local t = ply:IsTraitor()
     --Add Target back to pool
-    if ply:IsTraitor() then
+    if t then
         AddToPool(PlayerByName(traitor_targets[ply:Nick()]))
         --Check if a Traitor is without a target
+		local assigned = false
         for _, v in pairs(GetTraitors()) do
-            if v:Alive() and not PlayerByName(traitor_targets[v:Nick()]):Alive() then
-			    SetTraitorTarget(v) 
+            if !assigned && v:Alive() && traitor_targets[v:Nick()] == nil then
+			    SetTraitorTarget(v)
+				assigned = true
             end
         end
         traitor_targets[ply:Nick()] = nil
         umsg.Start("hitman_notarget", ply)
         umsg.End()
+	else
+	    if GetAssignedHitman(ply) != nil then
+            SetTraitorTarget(GetAssignedHitman(ply))
+        end
     end
     -- Give Assigned Hitman a new target
-    if GetAssignedHitman(ply) ~= nil then
-        SetTraitorTarget(GetAssignedHitman(ply))
-    end
-    RemoveFromPool(ply)
+
+	if !t then
+        RemoveFromPool(ply)
+	end
 end
 
 function PlayerByName(name)

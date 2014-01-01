@@ -28,12 +28,12 @@ local function RadarScan(ply, cmd, args)
 
          local targets = {}
          for k, p in pairs(scan_ents) do
-            if ply:IsTraitor()
+            if ply:IsTraitor() then    
                 if GetAssignedHitman(p) != nil then
                     if GetAssignedHitman(p):Nick() != ply:Nick() then continue end
                 else continue
                 end
-            end
+            end    
             
             if ply == p or (not IsValid(p)) then continue end
 
@@ -66,8 +66,11 @@ local function RadarScan(ply, cmd, args)
          end
 
          umsg.Start("radar", ply)
-         umsg.Bool(ply:IsTraitor())
-
+         if ply:IsTraitor() then
+             umsg.Bool(true)
+         else
+             umsg.Bool(false)
+         end
          umsg.Char(#targets)
          for k, tgt in pairs(targets) do
             umsg.Char(tgt.role)

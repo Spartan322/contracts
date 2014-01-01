@@ -5,7 +5,7 @@ include("shared.lua")
 surface.CreateFont("DefaultBold", {font = "Tahoma",
                                    size = 13,
                                    weight = 1000})
-surface.CreateFont("TabLarge",    {font = "Tahoma",
+surface.CreateFont("TabLarge", {font = "Tahoma",
                                    size = 13,
                                    weight = 700,
                                    shadow = true, antialias = false})
@@ -295,7 +295,7 @@ local view = {origin = vector_origin, angles = angle_zero, fov=0, vm_origin = ve
 function GM:CalcView( ply, origin, angles, fov )
    view.origin = origin
    view.angles = angles
-   view.fov    = fov
+   view.fov = fov
 
    -- first person ragdolling
    if ply:Team() == TEAM_SPEC and ply:GetObserverMode() == OBS_MODE_IN_EYE then
@@ -317,7 +317,7 @@ function GM:CalcView( ply, origin, angles, fov )
 
       local func = wep.GetViewModelPosition
       if func then
-         view.vm_origin,  view.vm_angles = func( wep, origin*1, angles*1 )
+         view.vm_origin, view.vm_angles = func( wep, origin*1, angles*1 )
       end
 
       func = wep.CalcView
@@ -394,4 +394,3 @@ function CheckIdle()
       end
    end
 end
-

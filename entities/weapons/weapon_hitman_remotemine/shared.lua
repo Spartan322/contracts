@@ -16,7 +16,7 @@
        SWEP.EquipMenuData = {
           type = "item_weapon",
           desc = [[A mine, which is triggered by remote, placeable on walls. 
-          Can be crowbared and destroyed by innocents and detectives.]]
+          Can be shot and destroyed by innocents and detectives.]]
        };
      
        SWEP.Icon = "SSR/icon_tripwire.png"
