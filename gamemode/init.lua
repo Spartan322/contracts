@@ -1118,12 +1118,9 @@ function ReassignTarget(ply)
 	    if GetAssignedHitman(ply) != nil then
             SetTraitorTarget(GetAssignedHitman(ply))
         end
+		RemoveFromPool(ply)
     end
     -- Give Assigned Hitman a new target
-
-	if !t then
-        RemoveFromPool(ply)
-	end
 end
 
 function PlayerByName(name)
@@ -1132,7 +1129,6 @@ function PlayerByName(name)
     end
 end
 
---To be finished
 function AwardHitman(ply)
     SetKilledTargets(ply, 1 + traitor_killed_targets[ply:Nick()])
 end
@@ -1143,9 +1139,9 @@ function PunishHitman(ply)
     if traitor_killed_targets[ply:Nick()] < traitor_killed_civs[ply:Nick()] then
         local punishment = GetConVar("hitman_punishment"):GetInt()
 		if punishment == 1 then
-		    ply:Kill()
+		    PunishReveal(ply)
 		elseif punishment == 2 then
-            PunishReveal(ply)
+            ply:Kill()
 		end
         umsg.Start("hitman_disappointed", ply)
         umsg.Short(punishment)
