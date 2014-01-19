@@ -1,4 +1,3 @@
-
 if SERVER then
    AddCSLuaFile( "shared.lua" )
 end
@@ -8,7 +7,13 @@ SWEP.HoldType           = "ar2"
 if CLIENT then
    SWEP.PrintName          = "Silenced Rifle"
 
-   SWEP.Slot               = 2
+   SWEP.Slot               = 6
+
+   SWEP.EquipMenuData = {
+      type = "item_weapon",
+      desc = [[A classic choice among hitmen, 
+	allows long-range killing without a noise.]]
+   };
 
    SWEP.Icon = "VGUI/ttt/icon_scout"
 end
@@ -18,7 +23,7 @@ SWEP.Base               = "weapon_tttbase"
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 
-SWEP.Kind = WEAPON_HEAVY
+SWEP.Kind = WEAPON_EQUIP
 SWEP.WeaponID = AMMO_RIFLE
 SWEP.CanBuy = {ROLE_TRAITOR} -- only traitors can buy
 

@@ -1,6 +1,6 @@
     if SERVER then
        AddCSLuaFile( "shared.lua" )
-       resource.AddFile("materials/SSR/icon_tripwire.png")
+       --resource.AddFile("materials/VGUI/hitman/icon_tripmine.png")
     end
      
     SWEP.HoldType                           = "slam"
@@ -15,11 +15,13 @@
        
        SWEP.EquipMenuData = {
           type = "item_weapon",
-          desc = [[A mine, which is triggered by remote, placeable on walls. 
-          Can be shot and destroyed by innocents and detectives.]]
+          desc = [[A mine, which is triggered by remote,
+		placeable on walls.
+		Can be shot and destroyed by innocents and
+		detectives.]]
        };
      
-       SWEP.Icon = "SSR/icon_tripwire.png"
+       SWEP.Icon = "VGUI/hitman/icon_tripmine.png"
     end
 SWEP.Base = "weapon_tttbase"
      
