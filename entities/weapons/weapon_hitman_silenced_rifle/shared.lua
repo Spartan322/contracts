@@ -49,7 +49,7 @@ SWEP.ViewModelFOV		= 54
 SWEP.ViewModel          = Model("models/weapons/cstrike/c_snip_sg550.mdl")
 SWEP.WorldModel         = Model("models/weapons/w_snip_sg550.mdl")
 
-SWEP.Primary.Sound = Sound(")weapons/m4a1/m4a1-1.wav")
+SWEP.Primary.Sound = Sound("weapons/m4a1/m4a1-1.wav")
 SWEP.Primary.SoundLevel = 50
 
 SWEP.Secondary.Sound = Sound("Default.Zoom")
