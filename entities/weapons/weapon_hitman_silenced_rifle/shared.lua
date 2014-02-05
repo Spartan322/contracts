@@ -31,8 +31,8 @@ SWEP.Primary.Delay          = 1.5
 SWEP.Primary.Recoil         = 7
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "357_s"
-SWEP.Primary.Damage = 49
-SWEP.Primary.Cone = 0.005
+SWEP.Primary.Damage = 75
+SWEP.Primary.Cone = 0.000
 SWEP.Primary.ClipSize = 5
 SWEP.Primary.ClipMax = 0 -- keep mirrored to ammo
 SWEP.Primary.DefaultClip = 5
@@ -57,12 +57,21 @@ SWEP.Secondary.Sound = Sound("Default.Zoom")
 SWEP.IronSightsPos      = Vector( 5, -15, -2 )
 SWEP.IronSightsAng      = Vector( 2.6, 1.37, 3.5 )
 
+SWEP.ZoomLevel = 0
+SWEP.NextReload = CurTime() + 0.3
+
 function SWEP:SetZoom(state)
     if CLIENT then 
        return
     elseif IsValid(self.Owner) and self.Owner:IsPlayer() then
        if state then
-          self.Owner:SetFOV(20, 0.3)
+	      if self.ZoomLevel == 0 then
+              self.Owner:SetFOV(20, 0.3)
+		  elseif self.ZoomLevel == 1 then
+		      self.Owner:SetFOV(7, 0.3)
+		  elseif self.ZoomLevel == 2 then
+		      self.Owner:SetFOV(2, 0.3)
+		  end
        else
           self.Owner:SetFOV(0, 0.2)
        end
@@ -77,6 +86,7 @@ function SWEP:SecondaryAttack()
     bIronsights = not self:GetIronsights()
     
     self:SetIronsights( bIronsights )
+	self.ZoomLevel = 0
     
     if SERVER then
         self:SetZoom(bIronsights)
@@ -94,9 +104,12 @@ function SWEP:PreDrop()
 end
 
 function SWEP:Reload()
-    self.Weapon:DefaultReload( ACT_VM_RELOAD );
-    self:SetIronsights( false )
-    self:SetZoom(false)
+    if self:GetIronsights() && self.NextReload < CurTime() then
+	    self.ZoomLevel = (self.ZoomLevel + 1)% 3
+        self:SetZoom(true)
+		self:EmitSound(self.Secondary.Sound)
+	    self.NextReload = CurTime() + 1
+	end
 end
 
 
