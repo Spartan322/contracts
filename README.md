@@ -1,4 +1,4 @@
-Hitman
+Trouble in Terrorist Town: Hitman
 ==========
 ***Modification of Trouble in Terrorist Town, originally made by BadKingUrgrain***
 ***Modified by Mezzokoko***
